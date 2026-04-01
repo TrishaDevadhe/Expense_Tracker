@@ -87,6 +87,28 @@ function App() {
   const sortedExpenses = [...filteredExpenses].sort((a, b) => new Date(b.date) - new Date(a.date));
   const totalSpent = sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
+  const handleExportCSV = () => {
+    const headers = ['id', 'amount', 'category', 'date', 'note'];
+    const csvRows = sortedExpenses.map(expense => {
+      return [
+        expense.id,
+        expense.amount,
+        `"${expense.category}"`,
+        expense.date,
+        `"${(expense.note || '').replace(/"/g, '""')}"`
+      ].join(',');
+    });
+    const csvContent = [headers.join(','), ...csvRows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `expenses_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen p-4 sm:p-8 md:p-12 font-sans bg-gray-50 text-gray-900 selection:bg-primary-200">
       <header className="max-w-5xl mx-auto mb-10">
@@ -117,11 +139,24 @@ function App() {
         {/* Dynamic Spend Distribution Chart */}
         <ExpenseChart expenses={filteredExpenses} />
 
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 mt-4">
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2 whitespace-nowrap">
-            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
-            Transaction History
-          </h2>
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4 mt-4 w-full">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2 whitespace-nowrap">
+              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+              History
+            </h2>
+            <button
+              onClick={handleExportCSV}
+              disabled={sortedExpenses.length === 0}
+              className="px-3 py-1.5 bg-white border border-gray-200 text-gray-600 font-medium rounded-lg text-sm hover:border-gray-300 hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              title="Export visible data to CSV"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4 text-emerald-500">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              <span className="hidden sm:inline">Export CSV</span>
+            </button>
+          </div>
           
           <Filter 
             filterCategory={filterCategory} setFilterCategory={setFilterCategory} 
