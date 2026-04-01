@@ -10,6 +10,9 @@ function App() {
   const [date, setDate] = useState('');
   const [note, setNote] = useState('');
 
+  // Filter state
+  const [filterCategory, setFilterCategory] = useState('All');
+
   // Validation & feedback states
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
@@ -74,18 +77,38 @@ function App() {
     localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
   };
 
-  // Sort expenses by date (most recent first)
-  const sortedExpenses = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
+  // 1. FILTERING LOGIC
+  const filteredExpenses = filterCategory === 'All' 
+    ? expenses 
+    : expenses.filter(expense => expense.category === filterCategory);
+
+  // 2. SORTING LOGIC
+  const sortedExpenses = [...filteredExpenses].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // 3. TOTAL CALCULATION LOGIC
+  const totalSpent = sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
   return (
     <div className="min-h-screen p-6 sm:p-10 font-sans bg-gray-50 text-gray-900">
-      <header className="max-w-4xl mx-auto mb-10 text-center sm:text-left">
-        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
-          AI-Assisted <span className="text-primary-600">Expense Tracker</span>
-        </h1>
-        <p className="mt-4 text-xl text-gray-500">
-          Easily manage your personal finances offline.
-        </p>
+      <header className="max-w-4xl mx-auto mb-8 text-center sm:text-left flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div>
+          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+            AI-Assisted <span className="text-primary-600">Expense Tracker</span>
+          </h1>
+          <p className="mt-3 text-xl text-gray-500">
+            Easily manage your personal finances offline.
+          </p>
+        </div>
+        
+        {/* Total Summary Display */}
+        <div className="bg-white px-6 py-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center sm:items-end min-w-[200px]">
+          <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">
+            {filterCategory === 'All' ? 'Total Spent' : `${filterCategory} Total`}
+          </span>
+          <span className="text-3xl font-extrabold text-primary-600">
+            ₹{totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
+        </div>
       </header>
 
       <main className="max-w-4xl mx-auto space-y-8">
@@ -103,7 +126,7 @@ function App() {
           <form className="flex flex-col gap-4" onSubmit={handleAddExpense}>
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="amount">Amount</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="amount">Amount (₹)</label>
                 <input 
                   type="number" id="amount" step="0.01" placeholder="e.g. 200"
                   value={amount} onChange={(e) => setAmount(e.target.value)}
@@ -164,8 +187,29 @@ function App() {
 
         {/* Expenses List Section */}
         <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <h2 className="text-2xl font-bold text-gray-800">Recent Expenses</h2>
+            
+            {/* Category Filter Dropdown */}
+            <div className="flex items-center gap-2">
+              <label htmlFor="filter" className="text-sm font-medium text-gray-600 whitespace-nowrap">Filter by:</label>
+              <select
+                id="filter"
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none transition-shadow cursor-pointer font-medium text-gray-700"
+              >
+                <option value="All">All Categories</option>
+                <option value="Food & Drink">Food & Drink</option>
+                <option value="Transport">Transport</option>
+                <option value="Housing">Housing</option>
+                <option value="Health">Health</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Education">Education</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
           </div>
           
           <div className="overflow-x-auto">
@@ -193,7 +237,7 @@ function App() {
                         {expense.note || <span className="text-gray-300 italic">None</span>}
                       </td>
                       <td className="py-4 px-4 text-sm font-bold text-gray-900 text-right whitespace-nowrap">
-                        ${expense.amount.toFixed(2)}
+                        ₹{expense.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
                       <td className="py-4 px-4 text-center">
                         <button
@@ -217,11 +261,24 @@ function App() {
                   <tr>
                     <td colSpan="5" className="py-12 text-center">
                       <div className="flex flex-col items-center justify-center text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <p className="text-base font-medium text-gray-500">No expenses added yet</p>
-                        <p className="text-sm mt-1">Fill out the form above to record your first expense.</p>
+                        {/* Dynamic Empty State Icon based on context */}
+                        {expenses.length === 0 ? (
+                          <>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <p className="text-base font-medium text-gray-500">No expenses added yet</p>
+                            <p className="text-sm mt-1">Fill out the form above to record your first expense.</p>
+                          </>
+                        ) : (
+                          <>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <p className="text-base font-medium text-gray-500">No expenses in this category</p>
+                            <p className="text-sm mt-1">Try selecting a different filter above.</p>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
