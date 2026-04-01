@@ -8,16 +8,18 @@ const CATEGORIES = [
 const ExpenseForm = ({ 
   amount, setAmount, category, setCategory, 
   date, setDate, note, setNote, 
-  errors, successMessage, handleAddExpense 
+  errors, successMessage, handleAddExpense, editingId, handleCancelEdit 
 }) => {
   return (
     <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 mb-8 transition-shadow hover:shadow-md">
       <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
-        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Add Expense
+        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2 transition-colors">
+          {editingId ? (
+            <svg className="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+          ) : (
+            <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+          )}
+          {editingId ? 'Edit Expense' : 'Add Expense'}
         </h2>
         {successMessage && (
           <span className="text-sm font-semibold text-green-700 bg-green-50 px-4 py-1.5 rounded-full border border-green-200 animate-pulse">
@@ -96,12 +98,21 @@ const ExpenseForm = ({
             />
           </div>
 
-          <div className="w-full sm:w-auto mt-2 sm:mt-0">
+          <div className="w-full sm:w-auto mt-2 sm:mt-0 flex gap-2 w-full sm:w-auto flex-col sm:flex-row">
+            {editingId && (
+              <button 
+                type="button"
+                onClick={handleCancelEdit}
+                className="w-full sm:w-auto px-6 py-2.5 bg-white text-gray-600 border border-gray-200 font-bold tracking-wide rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all h-[46px] flex items-center justify-center animate-fade-in"
+              >
+                Cancel
+              </button>
+            )}
             <button 
               type="submit"
-              className="w-full sm:w-auto px-8 py-2.5 bg-primary-600 text-white font-bold tracking-wide rounded-xl hover:bg-primary-500 hover:shadow-lg hover:-translate-y-0.5 focus:ring-4 focus:ring-primary-300 focus:outline-none transition-all active:translate-y-0 h-[46px] flex items-center justify-center gap-2"
+              className={`w-full sm:w-auto px-8 py-2.5 text-white font-bold tracking-wide rounded-xl hover:shadow-lg hover:-translate-y-0.5 focus:ring-4 focus:outline-none transition-all active:translate-y-0 h-[46px] flex items-center justify-center gap-2 ${editingId ? 'bg-amber-500 hover:bg-amber-400 focus:ring-amber-300' : 'bg-primary-600 hover:bg-primary-500 focus:ring-primary-300'}`}
             >
-              Add Expense
+              {editingId ? 'Update Expense' : 'Add Expense'}
             </button>
           </div>
         </div>

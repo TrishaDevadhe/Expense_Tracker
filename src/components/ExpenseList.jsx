@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ExpenseList = ({ expenses, sortedExpenses, handleDeleteExpense }) => {
+const ExpenseList = ({ expenses, sortedExpenses, handleDeleteExpense, handleEditExpense }) => {
   // State to track which ID was recently copied
   const [copiedId, setCopiedId] = useState(null);
 
@@ -65,7 +65,18 @@ const ExpenseList = ({ expenses, sortedExpenses, handleDeleteExpense }) => {
                   <td className="py-4 px-5 text-base font-extrabold text-gray-900 text-right whitespace-nowrap">
                     ₹{expense.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
-                  <td className="py-4 px-5 text-center">
+                  <td className="py-4 px-5 text-center whitespace-nowrap">
+                    <button
+                      onClick={() => handleEditExpense(expense.id)}
+                      className="text-gray-300 hover:text-amber-500 p-2 rounded-xl hover:bg-amber-50 transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-amber-200 mr-1"
+                      title="Edit expense"
+                      aria-label="Edit expense"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </button>
                     <button
                       onClick={() => handleDeleteExpense(expense.id)}
                       className="text-gray-300 hover:text-red-500 p-2 rounded-xl hover:bg-red-50 transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-red-200"

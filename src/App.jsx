@@ -17,6 +17,7 @@ function App() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   
+  const [editingId, setEditingId] = useState(null);
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -48,25 +49,60 @@ function App() {
       return;
     }
 
-    const newExpense = {
-      id: crypto.randomUUID(),
-      amount: parseFloat(amount),
-      category,
-      date,
-      note: note.trim()
-    };
-
-    const updatedExpenses = [...expenses, newExpense];
-    setExpenses(updatedExpenses);
-    localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
+    if (editingId) {
+      // 📝 Update existing expense
+      const updatedExpenses = expenses.map(expense => 
+        expense.id === editingId 
+          ? { ...expense, amount: parseFloat(amount), category, date, note: note.trim() }
+          : expense
+      );
+      setExpenses(updatedExpenses);
+      localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
+      setSuccessMessage('Expense Updated! ✏️');
+      setEditingId(null);
+    } else {
+      // ➕ Create new expense
+      const newExpense = {
+        id: crypto.randomUUID(),
+        amount: parseFloat(amount),
+        category,
+        date,
+        note: note.trim()
+      };
+      const updatedExpenses = [...expenses, newExpense];
+      setExpenses(updatedExpenses);
+      localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
+      setSuccessMessage('Added Successfully! 🎉');
+    }
 
     setAmount('');
     setCategory('');
     setDate('');
     setNote('');
-    setSuccessMessage('Added Successfully! 🎉');
 
     setTimeout(() => setSuccessMessage(''), 3000);
+  };
+
+  const handleEditExpense = (id) => {
+    const expenseToEdit = expenses.find(expense => expense.id === id);
+    if (!expenseToEdit) return;
+    
+    setEditingId(id);
+    setAmount(expenseToEdit.amount.toString());
+    setCategory(expenseToEdit.category);
+    setDate(expenseToEdit.date);
+    setNote(expenseToEdit.note || '');
+    setErrors({});
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll user up to the form
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setAmount('');
+    setCategory('');
+    setDate('');
+    setNote('');
+    setErrors({});
   };
 
   const handleDeleteExpense = (id) => {
@@ -134,6 +170,7 @@ function App() {
           note={note} setNote={setNote}
           errors={errors} successMessage={successMessage}
           handleAddExpense={handleAddExpense}
+          editingId={editingId} handleCancelEdit={handleCancelEdit}
         />
 
         {/* Dynamic Spend Distribution Chart */}
@@ -169,6 +206,7 @@ function App() {
           expenses={expenses}
           sortedExpenses={sortedExpenses}
           handleDeleteExpense={handleDeleteExpense}
+          handleEditExpense={handleEditExpense}
         />
       </main>
       
