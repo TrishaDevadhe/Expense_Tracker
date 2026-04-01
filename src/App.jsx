@@ -14,6 +14,9 @@ function App() {
   const [note, setNote] = useState('');
   
   const [filterCategory, setFilterCategory] = useState('All');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -72,9 +75,14 @@ function App() {
     localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
   };
 
-  const filteredExpenses = filterCategory === 'All' 
-    ? expenses 
-    : expenses.filter(expense => expense.category === filterCategory);
+  const filteredExpenses = expenses.filter(expense => {
+    const matchCategory = filterCategory === 'All' || expense.category === filterCategory;
+    const expDate = new Date(expense.date);
+    // Use setHours(0,0,0,0) to ignore time matching issues if applicable, but string compare works too.
+    const matchStart = startDate ? expDate >= new Date(startDate) : true;
+    const matchEnd = endDate ? expDate <= new Date(endDate) : true;
+    return matchCategory && matchStart && matchEnd;
+  });
 
   const sortedExpenses = [...filteredExpenses].sort((a, b) => new Date(b.date) - new Date(a.date));
   const totalSpent = sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
@@ -109,13 +117,17 @@ function App() {
         {/* Dynamic Spend Distribution Chart */}
         <ExpenseChart expenses={filteredExpenses} />
 
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 mt-4">
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 mt-4">
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2 whitespace-nowrap">
             <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
             Transaction History
           </h2>
           
-          <Filter filterCategory={filterCategory} setFilterCategory={setFilterCategory} />
+          <Filter 
+            filterCategory={filterCategory} setFilterCategory={setFilterCategory} 
+            startDate={startDate} setStartDate={setStartDate}
+            endDate={endDate} setEndDate={setEndDate}
+          />
         </div>
 
         <ExpenseList 
