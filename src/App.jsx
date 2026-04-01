@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Summary from './components/Summary';
 import Filter from './components/Filter';
 import ExpenseForm from './components/ExpenseForm';
+import ExpenseChart from './components/ExpenseChart';
 import ExpenseList from './components/ExpenseList';
 
 function App() {
@@ -105,7 +106,10 @@ function App() {
           handleAddExpense={handleAddExpense}
         />
 
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        {/* Dynamic Spend Distribution Chart */}
+        <ExpenseChart expenses={filteredExpenses} />
+
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 mt-4">
           <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
             <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
             Transaction History
