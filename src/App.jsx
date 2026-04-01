@@ -3,6 +3,7 @@ import Summary from './components/Summary';
 import Filter from './components/Filter';
 import ExpenseForm from './components/ExpenseForm';
 import ExpenseChart from './components/ExpenseChart';
+import Insights from './components/Insights';
 import ExpenseList from './components/ExpenseList';
 
 function App() {
@@ -190,6 +191,9 @@ function App() {
           handleAddExpense={handleAddExpense}
           editingId={editingId} handleCancelEdit={handleCancelEdit}
         />
+
+        {/* 🧠 AI Powered Insights */}
+        <Insights expenses={filteredExpenses} totalSpent={totalSpent} />
 
         {/* Dynamic Spend Distribution Chart */}
         <ExpenseChart expenses={filteredExpenses} />
