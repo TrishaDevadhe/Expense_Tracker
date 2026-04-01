@@ -1,8 +1,12 @@
 import React from 'react';
 
-const Summary = ({ filterCategory, totalSpent }) => {
+const Summary = ({ filterCategory, totalSpent, highestCategory }) => {
   return (
-    <div className="bg-white px-6 py-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center sm:items-end min-w-[220px] transition-all hover:shadow-md">
+    <div className="bg-white px-6 py-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center sm:items-end min-w-[220px] transition-all hover:shadow-md relative overflow-hidden group">
+      
+      {/* Subtle background glow effect */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-primary-100 to-emerald-50 opacity-0 group-hover:opacity-30 blur transition-all duration-500 rounded-2xl -z-10"></div>
+      
       <span className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -12,6 +16,13 @@ const Summary = ({ filterCategory, totalSpent }) => {
       <span className="text-3xl font-extrabold text-primary-600 tracking-tight">
         ₹{totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </span>
+      
+      {highestCategory && filterCategory === 'All' && (
+        <span className="mt-2 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md animate-fade-in flex items-center gap-1 shadow-sm border border-emerald-100/50">
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          Highest: {highestCategory}
+        </span>
+      )}
     </div>
   );
 };

@@ -123,6 +123,24 @@ function App() {
   const sortedExpenses = [...filteredExpenses].sort((a, b) => new Date(b.date) - new Date(a.date));
   const totalSpent = sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
+  // 🤖 Bonus 6: AI-like Spending Category Insight Logic
+  let highestCategory = null;
+  let highestAmount = 0;
+  
+  if (sortedExpenses.length > 0) {
+    const dataMap = sortedExpenses.reduce((acc, expense) => {
+      acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
+      return acc;
+    }, {});
+    
+    for (const [cat, amt] of Object.entries(dataMap)) {
+      if (amt > highestAmount) {
+        highestAmount = amt;
+        highestCategory = cat;
+      }
+    }
+  }
+
   const handleExportCSV = () => {
     const headers = ['id', 'amount', 'category', 'date', 'note'];
     const csvRows = sortedExpenses.map(expense => {
@@ -158,7 +176,7 @@ function App() {
             </p>
           </div>
           
-          <Summary filterCategory={filterCategory} totalSpent={totalSpent} />
+          <Summary filterCategory={filterCategory} totalSpent={totalSpent} highestCategory={highestCategory} />
         </div>
       </header>
 
