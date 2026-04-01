@@ -26,29 +26,26 @@ function App() {
   const handleAddExpense = (e) => {
     e.preventDefault();
 
-    // Reset messages
     setErrors({});
     setSuccessMessage('');
 
     // Validate inputs
     const newErrors = {};
     if (!amount || parseFloat(amount) <= 0) {
-      newErrors.amount = 'Amount must be greater than 0';
+      newErrors.amount = 'Amount must be > 0';
     }
     if (!category) {
-      newErrors.category = 'Category is required';
+      newErrors.category = 'Required';
     }
     if (!date) {
-      newErrors.date = 'Date is required';
+      newErrors.date = 'Required';
     }
 
-    // Stop if there are errors
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    // Create the expense object
     const newExpense = {
       id: Date.now(),
       amount: parseFloat(amount),
@@ -57,23 +54,28 @@ function App() {
       note: note.trim()
     };
 
-    // Update state & localStorage (prepend so newest is on top)
-    const updatedExpenses = [newExpense, ...expenses];
+    const updatedExpenses = [...expenses, newExpense];
     setExpenses(updatedExpenses);
     localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
 
-    // Clear form and show success
     setAmount('');
     setCategory('');
     setDate('');
     setNote('');
     setSuccessMessage('Expense Added ✅');
 
-    // Auto-hide success message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 3000);
+    setTimeout(() => setSuccessMessage(''), 3000);
   };
+
+  // Handle deleting an expense
+  const handleDeleteExpense = (id) => {
+    const updatedExpenses = expenses.filter(expense => expense.id !== id);
+    setExpenses(updatedExpenses);
+    localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
+  };
+
+  // Sort expenses by date (most recent first)
+  const sortedExpenses = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return (
     <div className="min-h-screen p-6 sm:p-10 font-sans bg-gray-50 text-gray-900">
@@ -92,7 +94,7 @@ function App() {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800">Add Expense</h2>
             {successMessage && (
-              <span className="text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
+              <span className="text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-100">
                 {successMessage}
               </span>
             )}
@@ -103,13 +105,9 @@ function App() {
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="amount">Amount</label>
                 <input 
-                  type="number" 
-                  id="amount" 
-                  step="0.01"
-                  placeholder="e.g. 200"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition-shadow ${errors.amount ? 'border-red-500' : 'border-gray-300'}`}
+                  type="number" id="amount" step="0.01" placeholder="e.g. 200"
+                  value={amount} onChange={(e) => setAmount(e.target.value)}
+                  className={`w-full px-4 py-2 bg-white border rounded-lg outline-none transition-shadow ${errors.amount ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-500 focus:ring-2'}`}
                 />
                 {errors.amount && <p className="text-red-500 text-xs mt-1">{errors.amount}</p>}
               </div>
@@ -117,10 +115,8 @@ function App() {
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="category">Category</label>
                 <select 
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition-shadow bg-white ${errors.category ? 'border-red-500' : 'border-gray-300'}`}
+                  id="category" value={category} onChange={(e) => setCategory(e.target.value)}
+                  className={`w-full px-4 py-2 bg-white border rounded-lg outline-none transition-shadow ${errors.category ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-500 focus:ring-2'}`}
                 >
                   <option value="" disabled>Select category</option>
                   <option value="Food & Drink">Food & Drink</option>
@@ -138,11 +134,8 @@ function App() {
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="date">Date</label>
                 <input 
-                  type="date" 
-                  id="date" 
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition-shadow ${errors.date ? 'border-red-500' : 'border-gray-300'}`}
+                  type="date" id="date" value={date} onChange={(e) => setDate(e.target.value)}
+                  className={`w-full px-4 py-2 bg-white border rounded-lg outline-none transition-shadow ${errors.date ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-500 focus:ring-2'}`}
                 />
                 {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date}</p>}
               </div>
@@ -152,12 +145,8 @@ function App() {
               <div className="flex-1 w-full flex-grow-[2]">
                 <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="note">Note (Optional)</label>
                 <input 
-                  type="text" 
-                  id="note" 
-                  placeholder="e.g. Lunch with team"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition-shadow"
+                  type="text" id="note" placeholder="e.g. Lunch with team" value={note} onChange={(e) => setNote(e.target.value)}
+                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition-shadow"
                 />
               </div>
 
@@ -173,42 +162,67 @@ function App() {
           </form>
         </section>
 
-        {/* Expenses List Section (Minimal Implementation for display only) */}
+        {/* Expenses List Section */}
         <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800">Recent Expenses</h2>
           </div>
           
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="py-3 px-4 text-sm font-semibold text-gray-600">Date</th>
+                <tr className="border-b border-gray-200 bg-gray-50">
+                  <th className="py-3 px-4 text-sm font-semibold text-gray-600 rounded-tl-lg">Date</th>
                   <th className="py-3 px-4 text-sm font-semibold text-gray-600">Category</th>
                   <th className="py-3 px-4 text-sm font-semibold text-gray-600">Note</th>
                   <th className="py-3 px-4 text-sm font-semibold text-gray-600 text-right">Amount</th>
+                  <th className="py-3 px-4 text-sm font-semibold text-gray-600 text-center rounded-tr-lg w-20">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {expenses.length > 0 ? (
-                  expenses.map(expense => (
-                    <tr key={expense.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                      <td className="py-3 px-4 text-sm text-gray-600">{expense.date}</td>
-                      <td className="py-3 px-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+                {sortedExpenses.length > 0 ? (
+                  sortedExpenses.map(expense => (
+                    <tr key={expense.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors group">
+                      <td className="py-4 px-4 text-sm text-gray-600 whitespace-nowrap">{expense.date}</td>
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-primary-100">
                           {expense.category}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-500">{expense.note || '-'}</td>
-                      <td className="py-3 px-4 text-sm font-semibold text-gray-900 text-right">
+                      <td className="py-4 px-4 text-sm text-gray-500 max-w-[200px] truncate" title={expense.note}>
+                        {expense.note || <span className="text-gray-300 italic">None</span>}
+                      </td>
+                      <td className="py-4 px-4 text-sm font-bold text-gray-900 text-right whitespace-nowrap">
                         ${expense.amount.toFixed(2)}
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <button
+                          onClick={() => handleDeleteExpense(expense.id)}
+                          className="text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                          title="Delete expense"
+                          aria-label="Delete expense"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                          </svg>
+                        </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="py-8 text-center text-sm text-gray-500">
-                      No expenses found. Start adding some!
+                    <td colSpan="5" className="py-12 text-center">
+                      <div className="flex flex-col items-center justify-center text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p className="text-base font-medium text-gray-500">No expenses added yet</p>
+                        <p className="text-sm mt-1">Fill out the form above to record your first expense.</p>
+                      </div>
                     </td>
                   </tr>
                 )}
