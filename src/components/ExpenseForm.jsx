@@ -1,6 +1,9 @@
 import React from 'react';
 
-import { EXPENSE_CATEGORIES } from '../utils/expenseModel';
+const CATEGORIES = [
+  'Food & Drink', 'Transport', 'Housing', 'Health', 
+  'Entertainment', 'Shopping', 'Education', 'Other'
+];
 
 const ExpenseForm = ({ 
   amount, setAmount, category, setCategory, 
@@ -54,7 +57,7 @@ const ExpenseForm = ({
                 className={`w-full appearance-none pl-4 pr-10 py-2.5 bg-gray-50/50 border rounded-xl outline-none transition-all cursor-pointer font-medium text-gray-700 ${errors.category ? 'border-red-400 focus:ring-red-500 bg-red-50/10' : 'border-gray-200 focus:ring-primary-500 focus:border-primary-500 focus:bg-white hover:border-gray-300'}`}
               >
                 <option value="" disabled>Select category...</option>
-                {EXPENSE_CATEGORIES.map(cat => (
+                {CATEGORIES.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
