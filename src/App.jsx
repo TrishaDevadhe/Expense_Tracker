@@ -4,6 +4,7 @@ import Filter from './components/Filter';
 import ExpenseForm from './components/ExpenseForm';
 import ExpenseChart from './components/ExpenseChart';
 import ExpenseList from './components/ExpenseList';
+import { createExpense } from './utils/expenseModel';
 
 function App() {
   const [expenses, setExpenses] = useState([]);
@@ -29,42 +30,32 @@ function App() {
     setErrors({});
     setSuccessMessage('');
 
-    const newErrors = {};
-    if (!amount || parseFloat(amount) <= 0) {
-      newErrors.amount = 'Amount > 0';
+    try {
+      // Create sanitized data using centralized function
+      const newExpense = createExpense(amount, category, date, note);
+      
+      const updatedExpenses = [...expenses, newExpense];
+      setExpenses(updatedExpenses);
+      localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
+
+      setAmount('');
+      setCategory('');
+      setDate('');
+      setNote('');
+      setSuccessMessage('Added Successfully! 🎉');
+
+      setTimeout(() => setSuccessMessage(''), 3000);
+      
+    } catch (err) {
+      // Map string message to relevant field validation blindly or cleanly
+      if (err.message.includes('Amount')) setErrors({ amount: err.message });
+      else if (err.message.includes('category')) setErrors({ category: err.message });
+      else if (err.message.includes('Date')) setErrors({ date: err.message });
+      else setErrors({ note: 'Validation Failed' });
     }
-    if (!category) {
-      newErrors.category = 'Required';
-    }
-    if (!date) {
-      newErrors.date = 'Required';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    const newExpense = {
-      id: Date.now(),
-      amount: parseFloat(amount),
-      category,
-      date,
-      note: note.trim()
-    };
-
-    const updatedExpenses = [...expenses, newExpense];
-    setExpenses(updatedExpenses);
-    localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
-
-    setAmount('');
-    setCategory('');
-    setDate('');
-    setNote('');
-    setSuccessMessage('Added Successfully! 🎉');
-
-    setTimeout(() => setSuccessMessage(''), 3000);
   };
+
+
 
   const handleDeleteExpense = (id) => {
     const updatedExpenses = expenses.filter(expense => expense.id !== id);
