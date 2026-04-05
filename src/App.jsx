@@ -8,16 +8,16 @@ import ExpenseList from './components/ExpenseList';
 
 function App() {
   const [expenses, setExpenses] = useState([]);
-  
+
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [date, setDate] = useState('');
   const [note, setNote] = useState('');
-  
+
   const [filterCategory, setFilterCategory] = useState('All');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  
+
   const [editingId, setEditingId] = useState(null);
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
@@ -52,8 +52,8 @@ function App() {
 
     if (editingId) {
       // 📝 Update existing expense
-      const updatedExpenses = expenses.map(expense => 
-        expense.id === editingId 
+      const updatedExpenses = expenses.map(expense =>
+        expense.id === editingId
           ? { ...expense, amount: parseFloat(amount), category, date, note: note.trim() }
           : expense
       );
@@ -87,7 +87,7 @@ function App() {
   const handleEditExpense = (id) => {
     const expenseToEdit = expenses.find(expense => expense.id === id);
     if (!expenseToEdit) return;
-    
+
     setEditingId(id);
     setAmount(expenseToEdit.amount.toString());
     setCategory(expenseToEdit.category);
@@ -127,13 +127,13 @@ function App() {
   // 🤖 Bonus 6: AI-like Spending Category Insight Logic
   let highestCategory = null;
   let highestAmount = 0;
-  
+
   if (sortedExpenses.length > 0) {
     const dataMap = sortedExpenses.reduce((acc, expense) => {
       acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
       return acc;
     }, {});
-    
+
     for (const [cat, amt] of Object.entries(dataMap)) {
       if (amt > highestAmount) {
         highestAmount = amt;
@@ -183,7 +183,7 @@ function App() {
           {/* Left Column: Total + Log Expense */}
           <div className="lg:col-span-4 flex flex-col gap-5">
             <Summary filterCategory={filterCategory} totalSpent={totalSpent} highestCategory={highestCategory} />
-            <ExpenseForm 
+            <ExpenseForm
               amount={amount} setAmount={setAmount}
               category={category} setCategory={setCategory}
               date={date} setDate={setDate}
@@ -225,15 +225,15 @@ function App() {
                 <span className="hidden sm:inline">Export CSV</span>
               </button>
             </div>
-            
-            <Filter 
-              filterCategory={filterCategory} setFilterCategory={setFilterCategory} 
+
+            <Filter
+              filterCategory={filterCategory} setFilterCategory={setFilterCategory}
               startDate={startDate} setStartDate={setStartDate}
               endDate={endDate} setEndDate={setEndDate}
             />
           </div>
 
-          <ExpenseList 
+          <ExpenseList
             expenses={expenses}
             sortedExpenses={sortedExpenses}
             handleDeleteExpense={handleDeleteExpense}
