@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 // Preset color palette for the distinct categories
 const COLORS = [
@@ -15,7 +15,20 @@ const COLORS = [
 
 const ExpenseChart = ({ expenses }) => {
   // Graceful empty state hide
-  if (!expenses || expenses.length === 0) return null;
+  if (!expenses || expenses.length === 0) {
+    return (
+      <section className="glass-card p-6 md:p-8 animate-fade-in flex flex-col items-center justify-center h-full min-h-[300px]">
+        <h2 className="text-xl font-bold text-slate-100 mb-2 flex items-center gap-2">
+          <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+          </svg>
+          Spending Insights
+        </h2>
+        <p className="text-slate-400 text-sm">No data available for visualization</p>
+      </section>
+    );
+  }
 
   // 1. Group by category and sum up amounts based on the filtered array passed in
   const dataMap = expenses.reduce((acc, expense) => {
@@ -23,51 +36,56 @@ const ExpenseChart = ({ expenses }) => {
     return acc;
   }, {});
 
-  // 2. Convert raw map to Recharts format: [ { category: 'Food', total: 100 } ] and sort highest spend first
+  // 2. Convert to Recharts format and sort
   const data = Object.entries(dataMap)
-    .map(([category, total]) => ({ category, total }))
-    .sort((a, b) => b.total - a.total);
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
 
-  // Y-Axis string formatting
-  const formatYAxis = (tickItem) => `₹${tickItem}`;
+  // Custom label rendering for Tooltip
+  const renderTooltipFormatter = (value) => {
+    return [`₹${value.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, 'Total Spent'];
+  };
 
   return (
-    <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 mb-8 transition-shadow hover:shadow-md animate-fade-in">
-      <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-        <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    <section className="glass-card p-6 md:p-8 animate-fade-in h-auto flex flex-col justify-center h-full">
+      <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
+        <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
         </svg>
-        Spending Distribution
+        Spending Insights
       </h2>
       
       <div className="h-[300px] w-full mt-4">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 10, right: 30, left: 10, bottom: 25 }}>
-            <XAxis 
-              dataKey="category" 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }} 
-              dy={10} 
-            />
-            <YAxis 
-              tickFormatter={formatYAxis} 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }} 
-              dx={-10}
-            />
-            <Tooltip 
-              cursor={{ fill: '#f8fafc' }}
-              contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)', fontWeight: 'bold' }}
-              formatter={(value) => [`₹${value.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, 'Total Spent']}
-            />
-            <Bar dataKey="total" radius={[8, 8, 0, 0]} maxBarSize={60} animationDuration={1000}>
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={100}
+              paddingAngle={2}
+              dataKey="value"
+              nameKey="name"
+              stroke="none"
+            >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
-            </Bar>
-          </BarChart>
+            </Pie>
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#1e293b', color: '#f8fafc', borderRadius: '12px', border: '1px solid #334155', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+              itemStyle={{ fontWeight: 'bold' }}
+              formatter={renderTooltipFormatter}
+            />
+            <Legend 
+              verticalAlign="bottom" 
+              height={36} 
+              iconType="circle"
+              wrapperStyle={{ fontSize: '12px', color: '#cbd5e1' }}
+            />
+          </PieChart>
         </ResponsiveContainer>
       </div>
     </section>

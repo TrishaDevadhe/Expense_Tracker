@@ -1,4 +1,4 @@
-# 💸 AI-Assisted Expense Tracker
+# 💸 ExpenseIQ
 
 A visually polished, responsive, and completely offline-first personal finance dashboard. Built to elegantly track, categorize, and sum your daily expenses directly from your browser memory. 
 
@@ -37,7 +37,7 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
    ```bash
    npm run dev
    ```
-5. Click the `http://localhost:5173/` link that appears to view your new Expense Tracker in the browser!
+4. Click the `http://localhost:5173/` link that appears to view your new ExpenseIQ dashboard in the browser!
 
 ---
 
