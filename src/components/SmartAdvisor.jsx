@@ -16,7 +16,7 @@ const SmartAdvisor = ({ expenses }) => {
     setAiResponse(null);
 
     try {
-      const response = await fetch("http://localhost:5010/api/analyze-expenses", {
+      const response = await fetch("http://127.0.0.1:5010/api/analyze-expenses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

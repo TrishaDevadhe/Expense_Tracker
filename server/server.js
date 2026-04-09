@@ -17,6 +17,7 @@ const groq = new Groq({
 });
 
 app.post('/api/analyze-expenses', async (req, res) => {
+    console.log('📩 Received request to /api/analyze-expenses');
     try {
         const { expenses } = req.body;
 
@@ -25,7 +26,6 @@ app.post('/api/analyze-expenses', async (req, res) => {
         }
 
         // 1. Format data for the prompt
-        // We aggregate by category to keep the prompt clean and effective
         const categoryTotals = expenses.reduce((acc, exp) => {
             acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
             return acc;
@@ -71,6 +71,7 @@ app.post('/api/analyze-expenses', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 ExpenseIQ Backend running at http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 ExpenseIQ Backend running at http://0.0.0.0:${PORT}`);
+    console.log(`📡 You can access it via http://localhost:${PORT}`);
 });
