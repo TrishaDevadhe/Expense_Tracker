@@ -33,7 +33,7 @@ const Insights = ({ expenses, totalSpent }) => {
       setAiResponse(data.insights);
     } catch (err) {
       console.error(err);
-      setError("Oops! My AI brain is offline right now. Our team has been notified.");
+      setError(`AI Advisor Error: ${err.message}. Please check Vercel Logs.`);
     } finally {
       setIsLoading(false);
     }
