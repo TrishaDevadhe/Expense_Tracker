@@ -3,7 +3,7 @@ import Summary from './components/Summary';
 import Filter from './components/Filter';
 import ExpenseForm from './components/ExpenseForm';
 import ExpenseBarChart from './components/ExpenseBarChart';
-import SmartAdvisor from './components/SmartAdvisor';
+import Insights from './components/Insights';
 import ExpenseList from './components/ExpenseList';
 
 function App() {
@@ -202,7 +202,7 @@ function App() {
 
         {/* 🧠 Section 2: Smart Advisor (Full Width) */}
         <div className="w-full">
-          <SmartAdvisor expenses={filteredExpenses} />
+          <Insights expenses={filteredExpenses} totalSpent={totalSpent} />
         </div>
 
         {/* 📋 Section 3: Financial Records (Full Width Table) */}
