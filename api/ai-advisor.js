@@ -1,10 +1,15 @@
-import Groq from "groq-sdk";
-
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
 export default async function handler(req, res) {
+  const apiKey = process.env.GROQ_API_KEY;
+
+  if (!apiKey) {
+    console.error("CRITICAL: GROQ_API_KEY is missing from environment variables.");
+    return res.status(500).json({ 
+      error: "AI Advisor is not configured correctly. Please add GROQ_API_KEY to your Vercel/environment settings." 
+    });
+  }
+
+  const groq = new Groq({ apiKey });
+
   // Only allow POST requests
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
