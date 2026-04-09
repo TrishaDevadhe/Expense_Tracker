@@ -25,8 +25,14 @@ const Insights = ({ expenses, totalSpent }) => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch from AI Advisor');
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || errorData.message || 'Server returned an error');
+        } else {
+          const text = await response.text();
+          throw new Error(`Server Error (${response.status}): ${text.substring(0, 100)}...`);
+        }
       }
 
       const data = await response.json();
