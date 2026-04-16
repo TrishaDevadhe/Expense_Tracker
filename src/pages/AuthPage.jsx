@@ -93,7 +93,8 @@ const AuthPage = () => {
       setSuccess(`Verification code sent to ${response.data.identifier}`);
       setSignupStep(1);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to send verification code');
+      const errorData = err.response?.data;
+      setError(typeof errorData === 'string' ? errorData : (errorData?.error || errorData?.message || 'Failed to send verification code'));
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +118,8 @@ const AuthPage = () => {
       setSuccess('Verified! Now set up your password.');
       setSignupStep(2);
     } catch (err) {
-      setError(err.response?.data?.error || 'Invalid verification code');
+      const errorData = err.response?.data;
+      setError(typeof errorData === 'string' ? errorData : (errorData?.error || errorData?.message || 'Invalid verification code'));
     } finally {
       setIsLoading(false);
     }
@@ -164,7 +166,8 @@ const AuthPage = () => {
         window.location.href = '/dashboard';
       }
     } catch (err) {
-      setError(err.response?.data?.error || (isReset ? 'Reset failed. Please try again.' : 'Registration failed. Please try again.'));
+      const errorData = err.response?.data;
+      setError(typeof errorData === 'string' ? errorData : (errorData?.error || errorData?.message || (isReset ? 'Reset failed. Please try again.' : 'Registration failed. Please try again.')));
     } finally {
       setIsLoading(false);
     }
@@ -193,7 +196,12 @@ const AuthPage = () => {
       localStorage.setItem('token', response.data.token);
       window.location.href = '/dashboard';
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      console.error('Login error detail:', err.response?.data);
+      const errorData = err.response?.data;
+      const errorMessage = typeof errorData === 'string' 
+        ? errorData 
+        : (errorData?.error || errorData?.message || 'Login failed. Please check your credentials and environment variables.');
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
