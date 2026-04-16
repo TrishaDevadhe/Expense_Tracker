@@ -66,10 +66,6 @@
   --text-muted: #4B5563;
 }
 
-@font-face {
-  font-family: 'Inter';
-  src: url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-}
 
 body {
   @apply min-h-screen selection:bg-blue-500/30 font-sans overflow-x-hidden;

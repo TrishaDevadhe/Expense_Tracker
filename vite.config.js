@@ -8,8 +8,16 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000', // Port for our backend server
+        target: 'http://127.0.0.1:5000',
         changeOrigin: true,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            // Suppress "connection refused" logs during server startup
+            if (err.code !== 'ECONNREFUSED') {
+              console.error('proxy error', err);
+            }
+          });
+        },
       },
     },
   },

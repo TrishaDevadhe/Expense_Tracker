@@ -94,7 +94,11 @@ const AuthPage = () => {
       setSignupStep(1);
     } catch (err) {
       const errorData = err.response?.data;
-      setError(typeof errorData === 'string' ? errorData : (errorData?.error || errorData?.message || 'Failed to send verification code'));
+      // Defensive check: extract message string even if errorData is a nested object
+      const errorMessage = typeof errorData === 'string' 
+        ? errorData 
+        : (typeof (errorData?.error) === 'string' ? errorData.error : (errorData?.error?.message || errorData?.message || 'Failed to send verification code'));
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -119,7 +123,10 @@ const AuthPage = () => {
       setSignupStep(2);
     } catch (err) {
       const errorData = err.response?.data;
-      setError(typeof errorData === 'string' ? errorData : (errorData?.error || errorData?.message || 'Invalid verification code'));
+      const errorMessage = typeof errorData === 'string' 
+        ? errorData 
+        : (typeof (errorData?.error) === 'string' ? errorData.error : (errorData?.error?.message || errorData?.message || 'Invalid verification code'));
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -167,7 +174,10 @@ const AuthPage = () => {
       }
     } catch (err) {
       const errorData = err.response?.data;
-      setError(typeof errorData === 'string' ? errorData : (errorData?.error || errorData?.message || (isReset ? 'Reset failed. Please try again.' : 'Registration failed. Please try again.')));
+      const errorMessage = typeof errorData === 'string' 
+        ? errorData 
+        : (typeof (errorData?.error) === 'string' ? errorData.error : (errorData?.error?.message || errorData?.message || (isReset ? 'Reset failed.' : 'Registration failed.')));
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -200,7 +210,7 @@ const AuthPage = () => {
       const errorData = err.response?.data;
       const errorMessage = typeof errorData === 'string' 
         ? errorData 
-        : (errorData?.error || errorData?.message || 'Login failed. Please check your credentials and environment variables.');
+        : (typeof (errorData?.error) === 'string' ? errorData.error : (errorData?.error?.message || errorData?.message || 'Login failed. Please check your credentials.'));
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -226,7 +236,9 @@ const AuthPage = () => {
       window.location.href = '/dashboard';
     } catch (err) {
       console.error('Google Auth Error:', err);
-      setError(err.response?.data?.error || 'Google Sign-In failed. Please try again.');
+      // Firebase errors often have a .message property directly
+      const errorMessage = err.response?.data?.error || err.message || 'Google Sign-In failed.';
+      setError(typeof errorMessage === 'object' ? 'Authentication error occurred' : errorMessage);
     } finally {
       setIsLoading(false);
     }
