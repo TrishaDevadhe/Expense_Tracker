@@ -38,6 +38,23 @@ app.get('/api/user/profile', protect, (req, res) => {
   res.json(req.user);
 });
 
+app.get('/api/health', async (req, res) => {
+  try {
+    // Check database connection
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: 'UP', database: 'CONNECTED', time: new Date().toISOString() });
+  } catch (error) {
+    console.error('HEALTH CHECK FAILED:', error);
+    res.status(500).json({ 
+      status: 'DOWN', 
+      database: 'FAILED', 
+      error: error.message,
+      code: error.code,
+      meta: error.meta 
+    });
+  }
+});
+
 // Admin metric bonus
 app.get('/api/admin/metrics', async (req, res) => {
   try {
