@@ -14,7 +14,7 @@ const IncomeForm = ({ onSuccess, onCancel, currencySymbol = '₹', isDarkMode = 
   const [showHistory, setShowHistory] = useState(false);
 
   const api = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: '/api',
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
   });
 

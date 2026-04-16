@@ -5,7 +5,7 @@ import GlassCard from '../components/GlassCard';
 import { signInWithGoogle } from '../utils/firebaseAuth';
 import axios from 'axios';
 
-const API = 'http://localhost:5000/api/auth';
+const API = '/api/auth';
 
 const StepIndicator = ({ currentStep, totalSteps }) => (
   <div className="flex items-center justify-center gap-2 mb-6">

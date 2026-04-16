@@ -51,7 +51,7 @@ const Dashboard = () => {
   const [aiInsights, setAiInsights] = useState(null);
 
   const api = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: '/api',
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
   });
 
