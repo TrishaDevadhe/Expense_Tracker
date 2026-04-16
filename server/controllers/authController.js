@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { prisma } = require('../index');
 const { generateToken, hashPassword, comparePassword } = require('../utils/authUtils');
 const { generateOTP, storeOTP, verifyOTP: verifyStoredOTP, isVerified, clearOTP } = require('../utils/otpUtils');
 const { sendOTPEmail } = require('../utils/emailService');

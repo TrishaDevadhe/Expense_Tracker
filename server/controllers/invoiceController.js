@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { prisma } = require('../index');
 const Tesseract = require('tesseract.js');
 const pdf = require('pdf-parse');
 const { parseInvoice } = require('../services/aiService');
