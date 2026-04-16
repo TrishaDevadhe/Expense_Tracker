@@ -4,6 +4,17 @@ const morgan = require('morgan');
 require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
 
+// Optimize Prisma for Serverless (prevents connection limits)
+let prisma;
+if (process.env.NODE_ENV === 'production') {
+  prisma = new PrismaClient();
+} else {
+  if (!global.prisma) {
+    global.prisma = new PrismaClient();
+  }
+  prisma = global.prisma;
+}
+
 const authRoutes = require('./routes/authRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const dataRoutes = require('./routes/dataRoutes');
@@ -12,7 +23,6 @@ const invoiceRoutes = require('./routes/invoiceRoutes');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
-const prisma = new PrismaClient();
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes

@@ -10,7 +10,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "postinstall": "npx prisma generate --schema=server/prisma/schema.prisma"
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@langchain/groq": "^0.1.0",
