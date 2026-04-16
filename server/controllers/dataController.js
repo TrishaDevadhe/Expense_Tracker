@@ -1,4 +1,4 @@
-const { prisma } = require('../index');
+const prisma = require('../lib/prisma');
 
 // Income Controllers
 const getIncome = async (req, res) => {

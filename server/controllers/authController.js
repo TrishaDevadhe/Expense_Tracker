@@ -1,4 +1,4 @@
-const { prisma } = require('../index');
+const prisma = require('../lib/prisma');
 const { generateToken, hashPassword, comparePassword } = require('../utils/authUtils');
 const { generateOTP, storeOTP, verifyOTP: verifyStoredOTP, isVerified, clearOTP } = require('../utils/otpUtils');
 const { sendOTPEmail } = require('../utils/emailService');

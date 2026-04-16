@@ -1,4 +1,4 @@
-const { prisma } = require('../index');
+const prisma = require('../lib/prisma');
 const Tesseract = require('tesseract.js');
 const pdf = require('pdf-parse');
 const { parseInvoice } = require('../services/aiService');

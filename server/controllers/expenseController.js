@@ -1,4 +1,4 @@
-const { prisma } = require('../index');
+const prisma = require('../lib/prisma');
 
 const getExpenses = async (req, res) => {
   try {
