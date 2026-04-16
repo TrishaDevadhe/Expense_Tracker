@@ -1,4 +1,5 @@
-# 💸 ExpenseIQ
+# 💸 ExpenseIQ 🚀
+**Personal AI Expense Tracker** | Production Deployment Active
 
 A visually polished, responsive, and completely offline-first personal finance dashboard. Built to elegantly track, categorize, and sum your daily expenses directly from your browser memory. 
 
