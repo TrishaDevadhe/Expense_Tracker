@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000', // Default for many local backend setups, or we can use vercel dev
+        target: 'http://localhost:5000', // Port for our backend server
         changeOrigin: true,
       },
     },

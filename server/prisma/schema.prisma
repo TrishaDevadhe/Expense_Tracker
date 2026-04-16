@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String?
+  email         String   @unique
+  phone         String?  @unique
+  googleId      String?  @unique @map("google_id")
+  passwordHash  String?  @map("password_hash")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  sessions      Session[]
+  expenses      Expense[]
+  incomes       Income[]
+  budgets       Budget[]
+  invoices      Invoice[]
+  analyticsLogs AnalyticsLog[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiry    DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  amount      Float
+  category    String
+  currency    String   @default("USD")
+  date        DateTime @default(now())
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("expenses")
+}
+
+model Income {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  amount    Float
+  source    String
+  date      DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("income")
+}
+
+model Budget {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  limit     Float
+  category  String
+  month     Int?
+  year      Int?
+  currency  String   @default("USD")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, month, year])
+  @@map("budgets")
+}
+
+model Invoice {
+  id                String   @id @default(uuid())
+  userId            String   @map("user_id")
+  fileUrl           String   @map("file_url")
+  extractedDataJson Json?    @map("extracted_data_json")
+  uploadedAt        DateTime @default(now()) @map("uploaded_at")
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("invoices")
+}
+
+model AnalyticsLog {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  query     String
+  response  String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("analytics_logs")
+}
